@@ -1,10 +1,15 @@
 import 'package:chologhuri/screens/services/model/service_model.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../routes/routes_path.dart';
 
 class ServicesController extends GetxController {
   // Reactive variables
+  var searchController = TextEditingController().obs;
   final RxBool isLoading = false.obs;
   final RxString selectedLocation = 'Cox Bazar Highway Road'.obs;
+  var selectedService = ''.obs;
 
   // Service items data
   final List<ServiceModel> serviceItems = [
@@ -50,6 +55,7 @@ class ServicesController extends GetxController {
   }
 
   void onServiceTap(String serviceName) {
-    Get.snackbar('Service Selected', serviceName);
+    selectedService.value = serviceName;
+    Get.toNamed(RoutesPath.servicesItemScreen);
   }
 }
