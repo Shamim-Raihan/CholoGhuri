@@ -45,4 +45,26 @@ class Dialogs {
       },
     );
   }
+
+  static void showLogoutConfirmationDialog({required VoidCallback onConfirm}) {
+    showDialog(
+      context: Get.context!,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return CommonComponents().commonDialog(
+          context: context,
+          title: 'Logout',
+          message: 'Are you sure you want to logout?',
+          buttonText: 'Yes, Logout',
+          isConfirmationDialog: true,
+          cancelButtonText: 'Cancel',
+          onOkPressed: () {
+            Navigator.pop(context);
+            onConfirm();
+          },
+          onCancelPressed: () => Navigator.pop(context),
+        );
+      },
+    );
+  }
 }

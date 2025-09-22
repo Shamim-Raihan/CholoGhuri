@@ -9,7 +9,6 @@ class LaunchingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get the controller which will automatically handle navigation after 3 seconds
     Get.put(LaunchingController());
 
     return Scaffold(
