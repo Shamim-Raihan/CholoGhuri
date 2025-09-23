@@ -10,6 +10,7 @@ class RoutesPath {
   static const createNewPasswordScreen = '/create_new_password_screen';
   static const servicesScreen = '/services_screen';
   static const servicesItemScreen = '/services_item_screen';
+  static const itemDetailsScreen = '/item_details_screen';
   static const accountScreen = '/account_screen';
   static const profileScreen = '/profile_screen';
   static const editProfileScreen = '/edit_profile_screen';

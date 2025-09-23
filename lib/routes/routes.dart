@@ -1,3 +1,4 @@
+import 'package:chologhuri/screens/services/view/item_details_screen.dart';
 import 'package:chologhuri/screens/services/view/service_item_list_screen.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
@@ -83,6 +84,14 @@ class Routes {
     GetPage(
       name: RoutesPath.servicesItemScreen,
       page: () => ServiceItemListScreen(),
+      binding: CommonBindings(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 300),
+    ),
+
+    GetPage(
+      name: RoutesPath.itemDetailsScreen,
+      page: () => ItemDetailsScreen(),
       binding: CommonBindings(),
       transition: Transition.fadeIn,
       transitionDuration: const Duration(milliseconds: 300),

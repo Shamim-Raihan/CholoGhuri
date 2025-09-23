@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../components/common_components.dart';
 import '../../../helpers/color_helper.dart';
 import '../../../helpers/space_helper.dart';
+import '../../../routes/routes_path.dart';
 import '../controller/login_controller.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -131,8 +132,13 @@ class LoginScreen extends StatelessWidget {
           () => CommonComponents().commonButton(
             text: 'Log in',
             onPressed:
-                controller.isFormValid ? controller.onLoginPressed : () {},
-            disabled: !controller.isFormValid,
+                controller.isFormValid
+                    ? controller.onLoginPressed
+                    : () {
+                      Get.offAllNamed(RoutesPath.bottomScreen);
+                    },
+            // disabled: !controller.isFormValid,
+            disabled: false,
             isLoading: controller.isLoading,
             fontSize: 16,
           ),
