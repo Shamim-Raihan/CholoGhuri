@@ -31,11 +31,14 @@ class RegisterScreen extends StatelessWidget {
                     SpaceHelper.verticalSpace40,
                     _buildHeader(),
                     SpaceHelper.verticalSpace40,
-                    _buildRegisterForm(controller),
+                    _buildCustomTabSelector(controller),
+                    SpaceHelper.verticalSpace24,
+                    _buildSelectedForm(controller),
                     SpaceHelper.verticalSpace24,
                     _buildTermsAndConditions(controller),
                     SpaceHelper.verticalSpace24,
                     _buildNextButton(controller),
+                    SpaceHelper.verticalSpace24,
                   ],
                 ),
               ),
@@ -116,10 +119,96 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRegisterForm(RegisterController controller) {
+  Widget _buildCustomTabSelector(RegisterController controller) {
+    return Obx(
+      () => Container(
+        height: 48.h,
+        decoration: BoxDecoration(
+          color: ColorHelper.borderColor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(10.r),
+          border: Border.all(
+            color: ColorHelper.borderColor.withValues(alpha: 0.35),
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () => controller.selectTab(0),
+                child: Container(
+                  margin: EdgeInsets.all(4.w),
+                  decoration: BoxDecoration(
+                    color:
+                        controller.selectedTab == 0
+                            ? ColorHelper.primary
+                            : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Center(
+                    child: CommonComponents().commonText(
+                      fontSize: 14,
+                      textData: 'User',
+                      fontWeight:
+                          controller.selectedTab == 0
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                      color:
+                          controller.selectedTab == 0
+                              ? ColorHelper.background
+                              : ColorHelper.textSecondary,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => controller.selectTab(1),
+                child: Container(
+                  margin: EdgeInsets.all(4.w),
+                  decoration: BoxDecoration(
+                    color:
+                        controller.selectedTab == 1
+                            ? ColorHelper.primary
+                            : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Center(
+                    child: CommonComponents().commonText(
+                      fontSize: 14,
+                      textData: 'Service Provider',
+                      fontWeight:
+                          controller.selectedTab == 1
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                      color:
+                          controller.selectedTab == 1
+                              ? ColorHelper.background
+                              : ColorHelper.textSecondary,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectedForm(RegisterController controller) {
+    return Obx(
+      () =>
+          controller.selectedTab == 0
+              ? _buildUserForm(controller)
+              : _buildServiceProviderForm(controller),
+    );
+  }
+
+  Widget _buildUserForm(RegisterController controller) {
     return Column(
       children: [
-        // First Name and Last Name Row
         Row(
           children: [
             Expanded(
@@ -146,14 +235,82 @@ class RegisterScreen extends StatelessWidget {
           ],
         ),
         SpaceHelper.verticalSpace12,
-
-        // Email/Mobile Field
         CommonComponents().commonTextField(
           controller: controller.emailController,
-          labelText: 'Email or mobile number',
+          labelText: 'Email',
           keyboardType: TextInputType.emailAddress,
         ),
+        SpaceHelper.verticalSpace12,
+        CommonComponents().commonTextField(
+          controller: controller.phoneController,
+          labelText: 'Phone',
+          keyboardType: TextInputType.phone,
+        ),
       ],
+    );
+  }
+
+  Widget _buildServiceProviderForm(RegisterController controller) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  width: 160.w,
+                  child: CommonComponents().commonTextField(
+                    controller: controller.serviceFirstNameController,
+                    labelText: 'First Name',
+                    keyboardType: TextInputType.name,
+                  ),
+                ),
+              ),
+              SpaceHelper.horizontalSpace8,
+              Expanded(
+                child: SizedBox(
+                  width: 160.w,
+                  child: CommonComponents().commonTextField(
+                    controller: controller.serviceLastNameController,
+                    labelText: 'Last Name',
+                    keyboardType: TextInputType.name,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SpaceHelper.verticalSpace12,
+          CommonComponents().commonTextField(
+            controller: controller.serviceEmailController,
+            labelText: 'Email',
+            keyboardType: TextInputType.emailAddress,
+          ),
+          SpaceHelper.verticalSpace12,
+          CommonComponents().commonTextField(
+            controller: controller.servicePhoneController,
+            labelText: 'Phone',
+            keyboardType: TextInputType.phone,
+          ),
+          SpaceHelper.verticalSpace12,
+          CommonComponents().commonTextField(
+            controller: controller.organizationNameController,
+            labelText: 'Organization Name',
+            keyboardType: TextInputType.text,
+          ),
+          SpaceHelper.verticalSpace12,
+          CommonComponents().commonTextField(
+            controller: controller.organizationEmailController,
+            labelText: 'Organization Email',
+            keyboardType: TextInputType.emailAddress,
+          ),
+          SpaceHelper.verticalSpace12,
+          CommonComponents().commonTextField(
+            controller: controller.organizationPhoneController,
+            labelText: 'Organization Phone',
+            keyboardType: TextInputType.phone,
+          ),
+        ],
+      ),
     );
   }
 

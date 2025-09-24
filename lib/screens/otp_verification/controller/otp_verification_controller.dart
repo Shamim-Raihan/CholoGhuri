@@ -73,7 +73,7 @@ class OtpVerificationController extends GetxController {
           colorText: Colors.white,
         );
 
-        Get.toNamed(RoutesPath.createNewPasswordScreen);
+        Get.offAllNamed(RoutesPath.bottomScreen);
       } else {
         throw Exception('Invalid OTP');
       }
