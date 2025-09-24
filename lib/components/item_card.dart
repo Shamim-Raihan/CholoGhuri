@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 import '../helpers/color_helper.dart';
 import '../helpers/space_helper.dart';
 
-Widget itemCard() {
+Widget itemCard({required String id, required VoidCallback onTap}) {
   return InkWell(
-    onTap: () {
-      // Get.toNamed(RoutesPath.itemDetailsScreen);
-    },
+    onTap: onTap,
     child: Container(
       height: 100,
       padding: EdgeInsets.all(8),
@@ -18,16 +17,19 @@ Widget itemCard() {
       ),
       child: Row(
         children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15.r),
-              image: const DecorationImage(
-                image: NetworkImage(
-                  'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+          Hero(
+            tag: 'hotel_image_$id',
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.r),
+                image: const DecorationImage(
+                  image: NetworkImage(
+                    'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+                  ),
+                  fit: BoxFit.cover,
                 ),
-                fit: BoxFit.cover,
               ),
             ),
           ),

@@ -1,4 +1,3 @@
-import 'package:chologhuri/routes/routes_path.dart' show RoutesPath;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -6,12 +5,14 @@ import '../../../components/common_components.dart';
 import '../../../components/item_card.dart';
 import '../../../helpers/color_helper.dart';
 import '../../../helpers/space_helper.dart';
+import '../../../routes/routes_path.dart';
 
 class ItemDetailsScreen extends StatelessWidget {
   const ItemDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final String id = Get.arguments as String;
     return Scaffold(
       backgroundColor: ColorHelper.background,
       floatingActionButton: _buildFloatingActionButtons(),
@@ -25,12 +26,12 @@ class ItemDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildHotelImage(),
+                    _buildHotelImage(id),
                     SpaceHelper.verticalSpace24,
                     _buildHotelInfo(),
                     SpaceHelper.verticalSpace24,
                     _buildNearbyHotels(),
-                    SizedBox(height: 100.h,)
+                    SizedBox(height: 100.h),
                   ],
                 ),
               ),
@@ -78,27 +79,30 @@ class ItemDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHotelImage() {
-    return Container(
-      width: double.infinity,
-      height: 250.h,
-      // margin: EdgeInsets.symmetric(horizontal: 16.w),
-      decoration: BoxDecoration(
-        // borderRadius: BorderRadius.circular(20.r),
-        image: const DecorationImage(
-          image: NetworkImage(
-            'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
-          ), // Replace with actual image
-          fit: BoxFit.cover,
-        ),
-      ),
+  Widget _buildHotelImage(String id) {
+    return Hero(
+      tag: 'hotel_image_$id',
       child: Container(
+        width: double.infinity,
+        height: 250.h,
+        // margin: EdgeInsets.symmetric(horizontal: 16.w),
         decoration: BoxDecoration(
           // borderRadius: BorderRadius.circular(20.r),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.transparent, Colors.black.withOpacity(0.3)],
+          image: const DecorationImage(
+            image: NetworkImage(
+              'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
+            ), // Replace with actual image
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            // borderRadius: BorderRadius.circular(20.r),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.transparent, Colors.black.withOpacity(0.3)],
+            ),
           ),
         ),
       ),
@@ -233,7 +237,15 @@ class ItemDetailsScreen extends StatelessWidget {
               itemCount: 5,
               separatorBuilder: (context, index) => SpaceHelper.verticalSpace10,
               itemBuilder: (context, index) {
-                return itemCard();
+                return itemCard(
+                  id: 'nearby_$index',
+                  onTap: () {
+                    Get.toNamed(
+                      RoutesPath.itemDetailsScreen,
+                      arguments: index.toString(),
+                    );
+                  },
+                );
               },
             ),
           ),
@@ -302,7 +314,4 @@ class ItemDetailsScreen extends StatelessWidget {
       ),
     );
   }
-
-
-
 }

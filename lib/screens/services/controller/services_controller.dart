@@ -10,6 +10,7 @@ class ServicesController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxString selectedLocation = 'Cox Bazar Highway Road'.obs;
   var selectedService = ''.obs;
+  var haveRequest = true.obs;
 
   // Service items data
   final List<ServiceModel> serviceItems = [
@@ -58,4 +59,73 @@ class ServicesController extends GetxController {
     selectedService.value = serviceName;
     Get.toNamed(RoutesPath.servicesItemScreen);
   }
+
+  var selectedIndex = 0.obs;
+
+  // Service options data
+  final List<ServiceOption> serviceOptions = [
+    ServiceOption(
+      icon: Icons.motorcycle,
+      title: 'Bike Tow',
+      time: '15 min away',
+      price: 'BDT 350',
+    ),
+    ServiceOption(
+      icon: Icons.directions_car,
+      title: 'Light Vehicle Tow',
+      time: '27 min away',
+      price: 'BDT 1,200',
+    ),
+    ServiceOption(
+      icon: Icons.local_shipping,
+      title: 'Heavy Vehicle Tow',
+      time: '10 min away',
+      price: 'BDT 3,400',
+    ),
+    ServiceOption(
+      icon: Icons.local_shipping,
+      title: 'Heavy Vehicle Tow',
+      time: '10 min away',
+      price: 'BDT 3,400',
+    ),
+    ServiceOption(
+      icon: Icons.local_shipping,
+      title: 'Heavy Vehicle Tow',
+      time: '10 min away',
+      price: 'BDT 3,400',
+    ),
+    ServiceOption(
+      icon: Icons.local_shipping,
+      title: 'Heavy Vehicle Tow',
+      time: '10 min away',
+      price: 'BDT 3,400',
+    ),
+    ServiceOption(
+      icon: Icons.local_shipping,
+      title: 'Heavy Vehicle Tow',
+      time: '10 min away',
+      price: 'BDT 3,400',
+    ),
+    ServiceOption(
+      icon: Icons.local_shipping,
+      title: 'Heavy Vehicle Tow',
+      time: '10 min away',
+      price: 'BDT 3,400',
+    ),
+  ];
+}
+
+// Service Option Model
+class ServiceOption {
+  final IconData icon;
+  final String title;
+  final String time;
+  final String price;
+
+  ServiceOption({
+    required this.icon,
+    required this.title,
+    required this.time,
+    required this.price,
+  });
 }
