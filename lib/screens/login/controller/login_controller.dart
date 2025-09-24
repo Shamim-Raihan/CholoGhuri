@@ -4,7 +4,7 @@ import '../../../routes/routes_path.dart';
 
 class LoginController extends GetxController {
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  // final TextEditingController passwordController = TextEditingController();
 
   final RxBool _isLoading = false.obs;
   final RxBool _isPasswordVisible = false.obs;
@@ -18,7 +18,7 @@ class LoginController extends GetxController {
   void onInit() {
     super.onInit();
     emailController.addListener(_validateForm);
-    passwordController.addListener(_validateForm);
+    // passwordController.addListener(_validateForm);
   }
 
   void togglePasswordVisibility() {
@@ -27,8 +27,8 @@ class LoginController extends GetxController {
 
   void _validateForm() {
     final isEmailValid = _isValidEmail(emailController.text);
-    final isPasswordValid = passwordController.text.length >= 6;
-    _isFormValid.value = isEmailValid && isPasswordValid;
+    // final isPasswordValid = passwordController.text.length >= 6;
+    _isFormValid.value = isEmailValid;
   }
 
   bool _isValidEmail(String email) {
@@ -66,7 +66,7 @@ class LoginController extends GetxController {
         colorText: Colors.white,
       );
 
-      Get.offAllNamed(RoutesPath.bottomScreen);
+      Get.toNamed(RoutesPath.otpVerificationScreen);
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -91,7 +91,7 @@ class LoginController extends GetxController {
   @override
   void onClose() {
     emailController.dispose();
-    passwordController.dispose();
+    // passwordController.dispose();
     super.onClose();
   }
 }

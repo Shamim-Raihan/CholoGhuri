@@ -31,7 +31,7 @@ class LoginScreen extends StatelessWidget {
                     SpaceHelper.verticalSpace40,
                     _buildLoginForm(controller),
                     SpaceHelper.verticalSpace12,
-                    _buildForgotPassword(controller),
+                    // _buildForgotPassword(controller),
                   ],
                 ),
               ),
@@ -101,35 +101,35 @@ class LoginScreen extends StatelessWidget {
           labelText: 'Email or mobile number',
           keyboardType: TextInputType.emailAddress,
         ),
-        SpaceHelper.verticalSpace12,
+        SpaceHelper.verticalSpace30,
 
-        // Password Field
-        Obx(
-          () => CommonComponents().commonTextField(
-            controller: controller.passwordController,
-            labelText: 'Password',
-            isPassword: !controller.isPasswordVisible,
-            suffixIcon: GestureDetector(
-              onTap: controller.togglePasswordVisibility,
-              child: Container(
-                padding: EdgeInsets.all(12.w),
-                child: Icon(
-                  controller.isPasswordVisible
-                      ? Icons.visibility
-                      : Icons.visibility_off,
-                  color: ColorHelper.textSecondary,
-                  size: 24.w,
-                ),
-              ),
-            ),
-          ),
-        ),
-        SpaceHelper.verticalSpace24,
+        // // Password Field
+        // Obx(
+        //   () => CommonComponents().commonTextField(
+        //     controller: controller.passwordController,
+        //     labelText: 'Password',
+        //     isPassword: !controller.isPasswordVisible,
+        //     suffixIcon: GestureDetector(
+        //       onTap: controller.togglePasswordVisibility,
+        //       child: Container(
+        //         padding: EdgeInsets.all(12.w),
+        //         child: Icon(
+        //           controller.isPasswordVisible
+        //               ? Icons.visibility
+        //               : Icons.visibility_off,
+        //           color: ColorHelper.textSecondary,
+        //           size: 24.w,
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
+        // SpaceHelper.verticalSpace24,
 
         // Login Button
         Obx(
           () => CommonComponents().commonButton(
-            text: 'Log in',
+            text: 'Send Otp',
             onPressed:
                 controller.isFormValid ? controller.onLoginPressed : () {},
             disabled: !controller.isFormValid,
