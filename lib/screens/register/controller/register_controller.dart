@@ -3,25 +3,17 @@ import 'package:get/get.dart';
 import '../../../routes/routes_path.dart';
 
 class RegisterController extends GetxController {
-  // User fields
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-
-  // Service Provider fields
-  final TextEditingController serviceFirstNameController =
-      TextEditingController();
-  final TextEditingController serviceLastNameController =
-      TextEditingController();
-  final TextEditingController serviceEmailController = TextEditingController();
-  final TextEditingController servicePhoneController = TextEditingController();
-  final TextEditingController organizationNameController =
-      TextEditingController();
-  final TextEditingController organizationEmailController =
-      TextEditingController();
-  final TextEditingController organizationPhoneController =
-      TextEditingController();
+  var firstNameController = TextEditingController();
+  var lastNameController = TextEditingController();
+  var emailController = TextEditingController();
+  var phoneController = TextEditingController();
+  var serviceFirstNameController = TextEditingController();
+  var serviceLastNameController = TextEditingController();
+  var serviceEmailController = TextEditingController();
+  var servicePhoneController = TextEditingController();
+  var organizationNameController = TextEditingController();
+  var organizationEmailController = TextEditingController();
+  var organizationPhoneController = TextEditingController();
 
   final RxBool _isLoading = false.obs;
   final RxBool _isTermsAccepted = false.obs;

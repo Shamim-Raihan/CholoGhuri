@@ -1,6 +1,10 @@
+import 'package:chologhuri/screens/login/services/auth_storage_service.dart';
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 
 class HomeController extends GetxController {
+  AuthStorageService authStorage = AuthStorageService();
+
   // Filter state
   final RxInt selectedFilterIndex = 0.obs;
   final RxList<String> filterOptions =
@@ -23,9 +27,11 @@ class HomeController extends GetxController {
   final RxBool isLoadingLocation = false.obs;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     _initializeMapMarkers();
+    final auth = await authStorage.getAuth();
+    Logger().i('Stored auth: $auth');
   }
 
   // Filter methods

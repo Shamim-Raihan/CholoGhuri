@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 import '../../../routes/routes_path.dart';
+import '../../login/services/auth_services.dart';
+import '../../login/services/auth_storage_service.dart';
 
 class OtpVerificationController extends GetxController {
   final TextEditingController otpController = TextEditingController();
+  final AuthService _authService = AuthService();
+  final AuthStorageService _storage = AuthStorageService();
+  final Logger _logger = Logger();
 
   final RxBool _isLoading = false.obs;
   final RxBool _isFormValid = false.obs;
@@ -23,19 +29,19 @@ class OtpVerificationController extends GetxController {
 
   void _validateForm() {
     _otpCode.value = otpController.text;
-    _isFormValid.value = otpController.text.length == 5;
+    _isFormValid.value = otpController.text.length == 6;
     _hasError.value = false;
   }
 
   void onOtpCompleted(String value) {
     _otpCode.value = value;
-    _isFormValid.value = value.length == 5;
+    _isFormValid.value = value.length == 6;
     _hasError.value = false;
   }
 
   void onOtpChanged(String value) {
     _otpCode.value = value;
-    _isFormValid.value = value.length == 5;
+    _isFormValid.value = value.length == 6;
     _hasError.value = false;
   }
 
@@ -47,11 +53,13 @@ class OtpVerificationController extends GetxController {
   }
 
   void onVerifyPressed() async {
+    // hide keyboard if open
+    FocusManager.instance.primaryFocus?.unfocus();
     if (!_isFormValid.value) {
       _hasError.value = true;
       Get.snackbar(
         'Invalid OTP',
-        'Please enter the complete 5-digit verification code',
+        'Please enter the complete 6-digit verification code',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -62,9 +70,26 @@ class OtpVerificationController extends GetxController {
     _isLoading.value = true;
 
     try {
-      await Future.delayed(const Duration(seconds: 2));
+      final args = Get.arguments as Map<String, dynamic>?;
+      final phone =
+          args != null && args['phone'] != null
+              ? args['phone'] as String
+              : null;
+      if (phone == null) {
+        throw Exception('Phone number missing');
+      }
 
-      if (_otpCode.value.length == 5) {
+      final resp = await _authService.login(phone: phone, otp: _otpCode.value);
+      _logger.i('Login response: ${resp.message}');
+
+      if (resp.success && resp.data != null) {
+        // Save token and user info
+        await _storage.saveAuth(
+          token: resp.data!.token,
+          name: resp.data!.name,
+          role: resp.data!.role,
+        );
+
         Get.snackbar(
           'Success',
           'Login successful!',
@@ -75,10 +100,18 @@ class OtpVerificationController extends GetxController {
 
         Get.offAllNamed(RoutesPath.bottomScreen);
       } else {
-        throw Exception('Invalid OTP');
+        _hasError.value = true;
+        Get.snackbar(
+          'Error',
+          resp.message,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
       _hasError.value = true;
+      _logger.e('Login failed: $e');
       Get.snackbar(
         'Error',
         'Invalid verification code. Please try again.',
@@ -109,7 +142,7 @@ class OtpVerificationController extends GetxController {
 
   @override
   void onClose() {
-    otpController.dispose();
+    // otpController.dispose();
     super.onClose();
   }
 }
