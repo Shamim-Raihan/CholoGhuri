@@ -71,6 +71,7 @@ class Routes {
     GetPage(
       name: RoutesPath.createNewPasswordScreen,
       page: () => const CreateNewPasswordScreen(),
+      binding: CommonBindings(),
       transition: Transition.fadeIn,
       transitionDuration: const Duration(milliseconds: 300),
     ),

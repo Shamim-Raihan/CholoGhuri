@@ -67,13 +67,13 @@ class OtpVerificationController extends GetxController {
       if (_otpCode.value.length == 5) {
         Get.snackbar(
           'Success',
-          'OTP verified successfully!',
+          'Login successful!',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
           colorText: Colors.white,
         );
 
-        Get.toNamed(RoutesPath.createNewPasswordScreen);
+        Get.offAllNamed(RoutesPath.bottomScreen);
       } else {
         throw Exception('Invalid OTP');
       }
