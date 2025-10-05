@@ -185,7 +185,7 @@ class ServiceItemListScreen extends StatelessWidget {
                   index == controller.selectedIndex.value
                       ? const Color(0xFF4A47A3)
                       : Colors.grey.shade50,
-              width: 1
+              width: 1,
             ),
           ),
           child: Row(

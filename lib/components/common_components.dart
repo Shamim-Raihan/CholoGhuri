@@ -99,51 +99,72 @@ class CommonComponents {
     bool enabled = true,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
+    String? errorText,
   }) {
-    return Container(
-      height: 56.h,
-      decoration: BoxDecoration(
-        color: ColorHelper.background,
-        borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(
-          color: ColorHelper.borderColor.withValues(alpha: 0.35),
-          width: 1.5,
-        ),
-      ),
-      child: TextFormField(
-        enabled: enabled,
-        cursorColor: ColorHelper.primary,
-        controller: controller,
-        obscureText: isPassword,
-        keyboardType: keyboardType,
-        validator: validator,
-        style: GoogleFonts.poppins(
-          color: ColorHelper.textPrimary,
-          fontSize: 16.sp,
-        ),
-        decoration: InputDecoration(
-          hintText: labelText,
-          hintStyle: GoogleFonts.poppins(
-            color: ColorHelper.textSecondary,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w400,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 56.h,
+          decoration: BoxDecoration(
+            color: ColorHelper.background,
+            borderRadius: BorderRadius.circular(10.r),
+            border: Border.all(
+              color:
+                  errorText?.isNotEmpty == true
+                      ? Colors.red
+                      : ColorHelper.borderColor.withValues(alpha: 0.35),
+              width: 1.5,
+            ),
           ),
-          prefixIcon:
-              prefixIcon != null
-                  ? Icon(prefixIcon, color: ColorHelper.textSecondary)
-                  : null,
-          suffixIcon: suffixIcon,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 20.w,
-            vertical: 16.h,
+          child: TextFormField(
+            enabled: enabled,
+            cursorColor: ColorHelper.primary,
+            controller: controller,
+            obscureText: isPassword,
+            keyboardType: keyboardType,
+            validator: validator,
+            style: GoogleFonts.poppins(
+              color: ColorHelper.textPrimary,
+              fontSize: 16.sp,
+            ),
+            decoration: InputDecoration(
+              hintText: labelText,
+              hintStyle: GoogleFonts.poppins(
+                color: ColorHelper.textSecondary,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w400,
+              ),
+              prefixIcon:
+                  prefixIcon != null
+                      ? Icon(prefixIcon, color: ColorHelper.textSecondary)
+                      : null,
+              suffixIcon: suffixIcon,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 20.w,
+                vertical: 16.h,
+              ),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              focusedErrorBorder: InputBorder.none,
+            ),
           ),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          errorBorder: InputBorder.none,
-          focusedErrorBorder: InputBorder.none,
         ),
-      ),
+        if (errorText?.isNotEmpty == true)
+          Padding(
+            padding: EdgeInsets.only(top: 4.h, left: 4.w),
+            child: Text(
+              errorText!,
+              style: GoogleFonts.poppins(
+                color: Colors.red,
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+      ],
     );
   }
 

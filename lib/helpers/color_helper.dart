@@ -8,12 +8,10 @@ class ColorHelper {
     0xFFAFB8FF,
   ); // Light purple for active states
 
-
-
   // Splash screen colors
   static const Color lightBlue = Color(0xFF7589FD); // Lightning bolt color
-  static const Color black = Color.fromARGB(255, 0, 0, 0); 
-  static const Color white = Color.fromARGB(255, 255, 255, 255); 
+  static const Color black = Color.fromARGB(255, 0, 0, 0);
+  static const Color white = Color.fromARGB(255, 255, 255, 255);
 
   // Text colors
   static const Color textPrimary = Color(0xFF030311); // Black text

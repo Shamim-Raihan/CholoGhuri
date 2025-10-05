@@ -7,6 +7,7 @@ class RoutesPath {
   static const bottomScreen = '/bottom_screen';
   static const forgotPasswordScreen = '/forgot_password_screen';
   static const otpVerificationScreen = '/otp_verification_screen';
+  static const registrationOtpScreen = '/registration_otp_screen';
   static const createNewPasswordScreen = '/create_new_password_screen';
   static const servicesScreen = '/services_screen';
   static const servicesItemScreen = '/services_item_screen';
