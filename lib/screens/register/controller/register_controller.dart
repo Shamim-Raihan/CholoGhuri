@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'dart:io';
 import '../../../routes/routes_path.dart';
+import '../models/registration_request_model.dart';
+import '../services/registration_service.dart';
 
 class RegisterController extends GetxController {
   // User fields
@@ -125,34 +131,166 @@ class RegisterController extends GetxController {
   }
 
   void onNextPressed() async {
+    _validateAndShowErrors();
+
     if (!_isFormValid.value) {
-      Get.snackbar(
-        'Invalid Input',
-        'Please fill all fields and accept terms and conditions',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
       return;
     }
+
+    if (_selectedTab.value == 0) {
+      debugPrint('2');
+    } else {
+      debugPrint('3');
+    }
+
+    _printAllFormInfo();
 
     _isLoading.value = true;
 
     try {
-      await Future.delayed(const Duration(seconds: 2));
+      final RegistrationRequest request = _createRegistrationRequest();
 
-      Get.toNamed(RoutesPath.createPasswordScreen);
+      debugPrint('📤 Sending registration request...');
+      final response = await _registrationService.registerTempUser(request);
+
+      if (response.success && response.data != null) {
+        debugPrint(
+          '✅ Registration successful! Temp User ID: ${response.data!.tempUserId}',
+        );
+
+        Get.snackbar(
+          'Success',
+          response.message,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+
+        Get.toNamed(
+          RoutesPath.registrationOtpScreen,
+          arguments: {
+            'temp_user_id': response.data!.tempUserId,
+            'mobile_no': response.data!.tempUserMobileNo,
+            'otp_expired': response.data!.otpExpired,
+            'otp_expired_at': response.data!.otpExpiredAt,
+          },
+        );
+      } else {
+        debugPrint('❌ Registration failed: ${response.message}');
+
+        if (response.isMobileNumberTaken) {
+          _phoneError.value =
+              response.mobileNumberError ??
+              'This mobile number is already registered';
+        } else {
+          Get.snackbar(
+            'Registration Failed',
+            response.message,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
+      }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Registration failed. Please try again.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      debugPrint('💥 Registration error: $e');
+
+      if (e.toString().toLowerCase().contains('mobile') &&
+          e.toString().toLowerCase().contains('taken')) {
+        _phoneError.value = 'This mobile number is already registered';
+      } else {
+        Get.snackbar(
+          'Error',
+          'Registration failed. Please try again.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
     } finally {
       _isLoading.value = false;
     }
+  }
+
+  RegistrationRequest _createRegistrationRequest() {
+    if (_selectedTab.value == 0) {
+      return RegistrationRequest(
+        name:
+            '${firstNameController.text.trim()} ${lastNameController.text.trim()}',
+        email: emailController.text.trim(),
+        mobileNo: phoneController.text.trim(),
+        latitude: latitudeController.text.trim(),
+        longitude: longitudeController.text.trim(),
+        macAddress: macAddressController.text.trim(),
+        ipAddress: ipAddressController.text.trim(),
+        deviceType: '1',
+        basicUserType: '2',
+        country: countryController.text.trim(),
+        division: divisionController.text.trim(),
+        district: districtController.text.trim(),
+        thanaUpazila: thanaUpazilaController.text.trim(),
+        address: addressController.text.trim(),
+      );
+    } else {
+      return RegistrationRequest(
+        name:
+            '${serviceFirstNameController.text.trim()} ${serviceLastNameController.text.trim()}',
+        email: serviceEmailController.text.trim(),
+        mobileNo: servicePhoneController.text.trim(),
+        latitude: serviceLatitudeController.text.trim(),
+        longitude: serviceLongitudeController.text.trim(),
+        macAddress: serviceMacAddressController.text.trim(),
+        ipAddress: serviceIpAddressController.text.trim(),
+        deviceType: '1',
+        basicUserType: '3',
+        country: serviceCountryController.text.trim(),
+        division: serviceDivisionController.text.trim(),
+        district: serviceDistrictController.text.trim(),
+        thanaUpazila: serviceThanaUpazilaController.text.trim(),
+        address: serviceAddressController.text.trim(),
+      );
+    }
+  }
+
+  void _printAllFormInfo() {
+    debugPrint('==========================================');
+    debugPrint('📋 REGISTRATION FORM INFORMATION');
+    debugPrint('==========================================');
+
+    if (_selectedTab.value == 0) {
+      debugPrint('👤 USER REGISTRATION DATA:');
+      debugPrint('First Name: ${firstNameController.text}');
+      debugPrint('Last Name: ${lastNameController.text}');
+      debugPrint('Email: ${emailController.text}');
+      debugPrint('Phone: ${phoneController.text}');
+      debugPrint('Latitude: ${latitudeController.text}');
+      debugPrint('Longitude: ${longitudeController.text}');
+      debugPrint('MAC Address: ${macAddressController.text}');
+      debugPrint('IP Address: ${ipAddressController.text}');
+      debugPrint('Country: ${countryController.text}');
+      debugPrint('Division: ${divisionController.text}');
+      debugPrint('District: ${districtController.text}');
+      debugPrint('Thana/Upazila: ${thanaUpazilaController.text}');
+      debugPrint('Address: ${addressController.text}');
+    } else {
+      debugPrint('🏢 SERVICE PROVIDER REGISTRATION DATA:');
+      debugPrint('First Name: ${serviceFirstNameController.text}');
+      debugPrint('Last Name: ${serviceLastNameController.text}');
+      debugPrint('Email: ${serviceEmailController.text}');
+      debugPrint('Phone: ${servicePhoneController.text}');
+      debugPrint('Latitude: ${serviceLatitudeController.text}');
+      debugPrint('Longitude: ${serviceLongitudeController.text}');
+      debugPrint('MAC Address: ${serviceMacAddressController.text}');
+      debugPrint('IP Address: ${serviceIpAddressController.text}');
+      debugPrint('Country: ${serviceCountryController.text}');
+      debugPrint('Division: ${serviceDivisionController.text}');
+      debugPrint('District: ${serviceDistrictController.text}');
+      debugPrint('Thana/Upazila: ${serviceThanaUpazilaController.text}');
+      debugPrint('Address: ${serviceAddressController.text}');
+    }
+
+    debugPrint('Terms Accepted: ${_isTermsAccepted.value}');
+    debugPrint('==========================================');
   }
 
   void navigateToLogin() {

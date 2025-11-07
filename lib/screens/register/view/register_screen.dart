@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../../components/common_components.dart';
 import '../../../helpers/color_helper.dart';
 import '../../../helpers/space_helper.dart';
@@ -214,10 +213,13 @@ class RegisterScreen extends StatelessWidget {
             Expanded(
               child: SizedBox(
                 width: 160.w,
-                child: CommonComponents().commonTextField(
-                  controller: controller.firstNameController,
-                  labelText: 'First Name',
-                  keyboardType: TextInputType.name,
+                child: Obx(
+                  () => CommonComponents().commonTextField(
+                    controller: controller.firstNameController,
+                    labelText: 'First Name',
+                    keyboardType: TextInputType.name,
+                    errorText: controller.firstNameError,
+                  ),
                 ),
               ),
             ),
@@ -225,10 +227,13 @@ class RegisterScreen extends StatelessWidget {
             Expanded(
               child: SizedBox(
                 width: 160.w,
-                child: CommonComponents().commonTextField(
-                  controller: controller.lastNameController,
-                  labelText: 'Last Name',
-                  keyboardType: TextInputType.name,
+                child: Obx(
+                  () => CommonComponents().commonTextField(
+                    controller: controller.lastNameController,
+                    labelText: 'Last Name',
+                    keyboardType: TextInputType.name,
+                    errorText: controller.lastNameError,
+                  ),
                 ),
               ),
             ),
@@ -319,59 +324,138 @@ class RegisterScreen extends StatelessWidget {
       () => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: controller.toggleTermsAcceptance,
-            child: Container(
-              width: 18.w,
-              height: 18.w,
-              margin: EdgeInsets.only(top: 2.h, left: 4.w),
-              decoration: BoxDecoration(
-                color: ColorHelper.background,
-                borderRadius: BorderRadius.circular(3.r),
-                border: Border.all(
-                  color: ColorHelper.borderColor.withValues(alpha: 0.35),
-                  width: 1.5,
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  width: 160.w,
+                  child: Obx(
+                    () => CommonComponents().commonTextField(
+                      controller: controller.serviceFirstNameController,
+                      labelText: 'First Name',
+                      keyboardType: TextInputType.name,
+                      errorText: controller.firstNameError,
+                    ),
+                  ),
                 ),
               ),
-              child:
-                  controller.isTermsAccepted
-                      ? Icon(
-                        Icons.check,
-                        size: 12.w,
-                        color: ColorHelper.primary,
-                      )
-                      : null,
+              SpaceHelper.horizontalSpace8,
+              Expanded(
+                child: SizedBox(
+                  width: 160.w,
+                  child: Obx(
+                    () => CommonComponents().commonTextField(
+                      controller: controller.serviceLastNameController,
+                      labelText: 'Last Name',
+                      keyboardType: TextInputType.name,
+                      errorText: controller.lastNameError,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SpaceHelper.verticalSpace12,
+          Obx(
+            () => CommonComponents().commonTextField(
+              controller: controller.serviceEmailController,
+              labelText: 'Email',
+              keyboardType: TextInputType.emailAddress,
+              errorText: controller.emailError,
             ),
           ),
-          SpaceHelper.horizontalSpace20,
-          Expanded(
-            child: GestureDetector(
-              onTap: controller.openTermsAndConditions,
-              child: RichText(
-                text: TextSpan(
-                  style: GoogleFonts.inter(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w400,
-                    color: ColorHelper.textSecondary,
-                  ),
-                  children: [
-                    const TextSpan(
-                      text: 'By signing up you are agreeing to our ',
+          SpaceHelper.verticalSpace12,
+          Obx(
+            () => CommonComponents().commonTextField(
+              controller: controller.servicePhoneController,
+              labelText: 'Phone',
+              keyboardType: TextInputType.phone,
+              errorText: controller.phoneError,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTermsAndConditions(RegisterController controller) {
+    return Obx(
+      () => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onTap: controller.toggleTermsAcceptance,
+                child: Container(
+                  width: 18.w,
+                  height: 18.w,
+                  margin: EdgeInsets.only(top: 2.h, left: 4.w),
+                  decoration: BoxDecoration(
+                    color: ColorHelper.background,
+                    borderRadius: BorderRadius.circular(3.r),
+                    border: Border.all(
+                      color:
+                          controller.termsError.isNotEmpty
+                              ? Colors.red
+                              : ColorHelper.borderColor.withValues(alpha: 0.35),
+                      width: 1.5,
                     ),
-                    TextSpan(
-                      text: 'terms and conditions',
+                  ),
+                  child:
+                      controller.isTermsAccepted
+                          ? Icon(
+                            Icons.check,
+                            size: 12.w,
+                            color: ColorHelper.primary,
+                          )
+                          : null,
+                ),
+              ),
+              SpaceHelper.horizontalSpace20,
+              Expanded(
+                child: GestureDetector(
+                  onTap: controller.openTermsAndConditions,
+                  child: RichText(
+                    text: TextSpan(
                       style: GoogleFonts.inter(
                         fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                        color: ColorHelper.lightBlue,
-                        decoration: TextDecoration.underline,
+                        fontWeight: FontWeight.w400,
+                        color: ColorHelper.textSecondary,
                       ),
+                      children: [
+                        const TextSpan(
+                          text: 'By signing up you are agreeing to our ',
+                        ),
+                        TextSpan(
+                          text: 'terms and conditions',
+                          style: GoogleFonts.inter(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w500,
+                            color: ColorHelper.lightBlue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (controller.termsError.isNotEmpty)
+            Padding(
+              padding: EdgeInsets.only(top: 4.h, left: 24.w),
+              child: Text(
+                controller.termsError,
+                style: GoogleFonts.poppins(
+                  color: Colors.red,
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -381,8 +465,8 @@ class RegisterScreen extends StatelessWidget {
     return Obx(
       () => CommonComponents().commonButton(
         text: 'Next',
-        onPressed: controller.isFormValid ? controller.onNextPressed : () {},
-        disabled: !controller.isFormValid,
+        onPressed: controller.onNextPressed,
+        disabled: false, // Always enabled
         isLoading: controller.isLoading,
         fontSize: 16,
       ),
