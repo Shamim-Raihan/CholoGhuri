@@ -5,6 +5,7 @@ import '../../../components/common_components.dart';
 import '../../../helpers/color_helper.dart';
 import '../../../helpers/space_helper.dart';
 import '../controller/home_controller.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -69,16 +70,6 @@ class HomeScreen extends StatelessWidget {
                             color: ColorHelper.textPrimary,
                           ),
                         ),
-                        SpaceHelper.horizontalSpace8,
-                        Transform.rotate(
-                          angle:
-                              1.5708, // 90 degrees in radians (pointing down)
-                          child: Icon(
-                            Icons.arrow_back_ios,
-                            size: 16.sp,
-                            color: ColorHelper.textPrimary,
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -95,46 +86,77 @@ class HomeScreen extends StatelessWidget {
   Widget _buildFilterChips(HomeController controller) {
     return SizedBox(
       height: 34.h,
-      child: Obx(
-        () => ListView.builder(
+      child: Obx(() {
+        if (controller.isLoadingServices.value) {
+          // show shimmer placeholders
+          return ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            itemBuilder: (context, index) {
+              return Shimmer.fromColors(
+                baseColor: ColorHelper.filterChipInactive,
+                highlightColor: ColorHelper.mapBackground,
+                child: Container(
+                  width: 80.w,
+                  height: 28.h,
+                  decoration: BoxDecoration(
+                    color: ColorHelper.filterChipInactive,
+                    borderRadius: BorderRadius.circular(45.r),
+                  ),
+                ),
+              );
+            },
+            separatorBuilder: (_, __) => SizedBox(width: 8.w),
+            itemCount: 6,
+          );
+        }
+
+        return ListView.builder(
           scrollDirection: Axis.horizontal,
           padding: EdgeInsets.symmetric(horizontal: 12.w),
           itemCount: controller.filterOptions.length,
           itemBuilder: (context, index) {
-            final isSelected = controller.selectedFilterIndex.value == index;
-            return Padding(
-              padding: EdgeInsets.only(right: 4.w),
-              child: GestureDetector(
-                onTap: () => controller.selectFilter(index),
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 14.w,
-                    vertical: 6.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color:
-                        isSelected
-                            ? ColorHelper.primary
-                            : ColorHelper.filterChipInactive,
-                    borderRadius: BorderRadius.circular(45.r),
-                  ),
-                  child: Center(
-                    child: CommonComponents().commonText(
-                      fontSize: 14,
-                      textData: controller.filterOptions[index],
-                      fontWeight: FontWeight.w400,
+            return Obx(() {
+              final isSelected = controller.selectedFilterIndex.value == index;
+              final item = controller.filterOptions[index];
+              // read currentLanguage inside this Obx to react to changes
+              final lang =
+                  controller.localizationService.currentLanguageObs.value;
+              final label = item.localizedName(lang);
+              return Padding(
+                padding: EdgeInsets.only(right: 4.w),
+                child: GestureDetector(
+                  onTap: () => controller.selectFilter(index),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 14.w,
+                      vertical: 6.h,
+                    ),
+                    decoration: BoxDecoration(
                       color:
                           isSelected
-                              ? ColorHelper.background
-                              : ColorHelper.textSecondary,
+                              ? ColorHelper.primary
+                              : ColorHelper.filterChipInactive,
+                      borderRadius: BorderRadius.circular(45.r),
+                    ),
+                    child: Center(
+                      child: CommonComponents().commonText(
+                        fontSize: 14,
+                        textData: label,
+                        fontWeight: FontWeight.w400,
+                        color:
+                            isSelected
+                                ? ColorHelper.background
+                                : ColorHelper.textSecondary,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
+              );
+            });
           },
-        ),
-      ),
+        );
+      }),
     );
   }
 
@@ -163,7 +185,7 @@ class HomeScreen extends StatelessWidget {
                     child: Center(
                       child: CommonComponents().commonText(
                         fontSize: 16,
-                        textData: 'Map will be integrated here',
+                        textData: 'map_placeholder'.tr,
                         fontWeight: FontWeight.w400,
                         color: ColorHelper.textSecondary,
                         textAlign: TextAlign.center,

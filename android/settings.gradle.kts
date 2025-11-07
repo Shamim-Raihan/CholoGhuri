@@ -19,7 +19,9 @@ pluginManagement {
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
     id("com.android.application") version "8.7.0" apply false
-    id("org.jetbrains.kotlin.android") version "1.8.22" apply false
+    // Bumped to Kotlin 2.2.0 to match newer plugin metadata used by some dependencies
+    // See Flutter Fix in build output recommending upgrading the Kotlin Gradle plugin.
+    id("org.jetbrains.kotlin.android") version "2.2.0" apply false
 }
 
 include(":app")

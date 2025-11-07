@@ -1,10 +1,13 @@
-import 'package:chologhuri/screens/services/model/service_model.dart';
+import 'package:chologhuri/screens/services/model/service_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:chologhuri/core/localization/localization_service.dart';
+import 'package:chologhuri/core/config/api_config.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../components/common_components.dart';
 import '../../../helpers/color_helper.dart';
-import '../../../helpers/space_helper.dart';
 import '../controller/services_controller.dart';
 
 class ServicesScreen extends StatelessWidget {
@@ -19,9 +22,9 @@ class ServicesScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            SpaceHelper.verticalSpace24,
+            SizedBox(height: 24.h),
             _buildLocationHeader(controller),
-            SpaceHelper.verticalSpace30,
+            SizedBox(height: 30.h),
             Expanded(child: _buildServicesGrid(controller)),
           ],
         ),
@@ -36,7 +39,7 @@ class ServicesScreen extends StatelessWidget {
         children: [
           Icon(Icons.location_on, color: ColorHelper.primary, size: 24.w),
 
-          SpaceHelper.horizontalSpace12,
+          SizedBox(width: 12.w),
 
           Expanded(
             child: Column(
@@ -49,7 +52,7 @@ class ServicesScreen extends StatelessWidget {
                   color: ColorHelper.textSecondary,
                 ),
 
-                SpaceHelper.verticalSpace3,
+                SizedBox(height: 3.h),
 
                 Row(
                   children: [
@@ -64,7 +67,7 @@ class ServicesScreen extends StatelessWidget {
                       ),
                     ),
 
-                    SpaceHelper.horizontalSpace8,
+                    SizedBox(width: 8.w),
 
                     GestureDetector(
                       onTap: controller.onLocationTap,
@@ -90,29 +93,56 @@ class ServicesScreen extends StatelessWidget {
   Widget _buildServicesGrid(ServicesController controller) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: GridView.builder(
-        padding: EdgeInsets.zero,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 14.w,
-          mainAxisSpacing: 14.h,
-          childAspectRatio: 1.0,
-        ),
-        itemCount: controller.serviceItems.length,
-        itemBuilder: (context, index) {
-          final serviceItem = controller.serviceItems[index];
-          return _buildServiceCard(serviceItem, controller);
-        },
-      ),
+      child: Obx(() {
+        if (controller.isLoading.value) {
+          // shimmer grid
+          return GridView.builder(
+            padding: EdgeInsets.zero,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 14.w,
+              mainAxisSpacing: 14.h,
+              childAspectRatio: 1.0,
+            ),
+            itemCount: 6,
+            itemBuilder:
+                (context, index) => Shimmer.fromColors(
+                  baseColor: ColorHelper.filterChipInactive,
+                  highlightColor: ColorHelper.mapBackground,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: ColorHelper.filterChipInactive,
+                      borderRadius: BorderRadius.circular(20.r),
+                    ),
+                  ),
+                ),
+          );
+        }
+
+        return GridView.builder(
+          padding: EdgeInsets.zero,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 14.w,
+            mainAxisSpacing: 14.h,
+            childAspectRatio: 1.0,
+          ),
+          itemCount: controller.serviceItems.length,
+          itemBuilder: (context, index) {
+            final serviceItem = controller.serviceItems[index];
+            return _buildServiceCard(serviceItem, controller);
+          },
+        );
+      }),
     );
   }
 
   Widget _buildServiceCard(
-    ServiceModel serviceItem,
+    ServiceItem serviceItem,
     ServicesController controller,
   ) {
     return GestureDetector(
-      onTap: () => controller.onServiceTap(serviceItem.title),
+      onTap: () => controller.onServiceTap(serviceItem),
       child: Container(
         decoration: BoxDecoration(
           color: ColorHelper.mapBackground,
@@ -121,29 +151,79 @@ class ServicesScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
+            SizedBox(
               width: 48.w,
               height: 48.h,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(serviceItem.iconPath),
-                  fit: BoxFit.contain,
-                ),
+              child: Builder(
+                builder: (context) {
+                  if (serviceItem.icon.startsWith('http')) {
+                    return CachedNetworkImage(
+                      imageUrl: serviceItem.icon,
+                      fit: BoxFit.contain,
+                      placeholder:
+                          (_, __) => Image.asset(
+                            'assets/icons/Repair.png',
+                            fit: BoxFit.contain,
+                          ),
+                      errorWidget:
+                          (_, __, ___) => Image.asset(
+                            'assets/icons/Repair.png',
+                            fit: BoxFit.contain,
+                          ),
+                    );
+                  }
+
+                  if (serviceItem.icon.startsWith('assets/')) {
+                    return Image.asset(
+                      serviceItem.icon,
+                      fit: BoxFit.contain,
+                      errorBuilder:
+                          (_, __, ___) => Image.asset(
+                            'assets/icons/Repair.png',
+                            fit: BoxFit.contain,
+                          ),
+                    );
+                  }
+
+                  final candidate =
+                      serviceItem.icon.startsWith('/')
+                          ? '${ApiConfig.baseUrl}${serviceItem.icon}'
+                          : '${ApiConfig.baseUrl}/${serviceItem.icon}';
+
+                  return CachedNetworkImage(
+                    imageUrl: candidate,
+                    fit: BoxFit.contain,
+                    placeholder:
+                        (_, __) => Image.asset(
+                          'assets/icons/Repair.png',
+                          fit: BoxFit.contain,
+                        ),
+                    errorWidget:
+                        (_, __, ___) => Image.asset(
+                          'assets/icons/Repair.png',
+                          fit: BoxFit.contain,
+                        ),
+                  );
+                },
               ),
             ),
 
-            SpaceHelper.verticalSpace8,
+            SizedBox(height: 8.h),
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.w),
-              child: CommonComponents().commonText(
-                fontSize: 12,
-                textData: serviceItem.title,
-                fontWeight: FontWeight.w400,
-                color: ColorHelper.textPrimary,
-                textAlign: TextAlign.center,
-                maxLine: 2,
-              ),
+              child: Obx(() {
+                final lang =
+                    Get.find<LocalizationService>().currentLanguageObs.value;
+                return CommonComponents().commonText(
+                  fontSize: 12,
+                  textData: serviceItem.localizedName(lang),
+                  fontWeight: FontWeight.w400,
+                  color: ColorHelper.textPrimary,
+                  textAlign: TextAlign.center,
+                  maxLine: 2,
+                );
+              }),
             ),
           ],
         ),

@@ -45,5 +45,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Location permissions for iOS -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs location access to auto-fill your address during registration.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs location access to auto-fill your address during registration.</string>
 </dict>
 </plist>

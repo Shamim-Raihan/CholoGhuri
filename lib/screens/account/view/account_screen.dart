@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
+// ...existing imports...
 import '../../../components/common_components.dart';
 import '../../../helpers/color_helper.dart';
 import '../../../helpers/space_helper.dart';
 import '../controller/account_controller.dart';
+import 'package:chologhuri/core/localization/localization_service.dart';
+import 'package:get/get.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -81,7 +83,7 @@ class AccountScreen extends StatelessWidget {
                   onTap: () => controller.navigateToProfile(),
                   child: CommonComponents().commonText(
                     fontSize: 12,
-                    textData: 'See Profile',
+                    textData: 'see_profile'.tr,
                     fontWeight: FontWeight.w400,
                     color: ColorHelper.textSecondary,
                   ),
@@ -102,7 +104,7 @@ class AccountScreen extends StatelessWidget {
       ),
       child: _buildMenuItem(
         iconPath: 'assets/icons/message-search.png',
-        title: 'FAQ',
+        title: 'faq'.tr,
         onTap: () => controller.navigateToFAQ(),
         showBorder: false,
       ),
@@ -117,7 +119,7 @@ class AccountScreen extends StatelessWidget {
       ),
       child: _buildMenuItem(
         iconPath: 'assets/icons/wallet-minus.png',
-        title: 'Payment History',
+        title: 'payment_history'.tr,
         onTap: () => controller.navigateToPaymentHistory(),
         showBorder: false,
       ),
@@ -132,9 +134,97 @@ class AccountScreen extends StatelessWidget {
       ),
       child: _buildMenuItem(
         iconPath: 'assets/icons/setting-2.png',
-        title: 'Settings',
-        onTap: () => controller.navigateToSettings(),
+        title: 'settings'.tr,
+        onTap: () => _showSettingsMenu(),
         showBorder: false,
+      ),
+    );
+  }
+
+  void _showSettingsMenu() {
+    final loc = Get.find<LocalizationService>();
+    Get.bottomSheet(
+      Container(
+        padding: EdgeInsets.all(16.w),
+        decoration: BoxDecoration(
+          color: ColorHelper.background,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CommonComponents().commonText(
+              fontSize: 16,
+              textData: 'select_language'.tr,
+              fontWeight: FontWeight.w600,
+              color: ColorHelper.textPrimary,
+            ),
+            SpaceHelper.verticalSpace12,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    await loc.changeLanguage('en');
+                    Get.back();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 8.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color:
+                          loc.currentLanguage == 'en'
+                              ? ColorHelper.primary
+                              : ColorHelper.mapBackground,
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: CommonComponents().commonText(
+                      fontSize: 14,
+                      textData: 'EN',
+                      fontWeight: FontWeight.w500,
+                      color:
+                          loc.currentLanguage == 'en'
+                              ? ColorHelper.background
+                              : ColorHelper.textPrimary,
+                    ),
+                  ),
+                ),
+                SpaceHelper.horizontalSpace12,
+                GestureDetector(
+                  onTap: () async {
+                    await loc.changeLanguage('bn');
+                    Get.back();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 8.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color:
+                          loc.currentLanguage == 'bn'
+                              ? ColorHelper.primary
+                              : ColorHelper.mapBackground,
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: CommonComponents().commonText(
+                      fontSize: 14,
+                      textData: 'BN',
+                      fontWeight: FontWeight.w500,
+                      color:
+                          loc.currentLanguage == 'bn'
+                              ? ColorHelper.background
+                              : ColorHelper.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SpaceHelper.verticalSpace15,
+          ],
+        ),
       ),
     );
   }
@@ -232,7 +322,7 @@ class AccountScreen extends StatelessWidget {
                         SpaceHelper.horizontalSpace8,
                         CommonComponents().commonText(
                           fontSize: 16,
-                          textData: 'Log out',
+                          textData: 'logout'.tr,
                           fontWeight: FontWeight.w400,
                           color: ColorHelper.logoutColor,
                         ),
