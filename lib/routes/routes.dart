@@ -1,9 +1,12 @@
+import 'package:chologhuri/screens/services/view/item_details_screen.dart';
+import 'package:chologhuri/screens/services/view/service_item_list_screen.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 
 import '../screens/launching/view/launching_screen.dart';
 import '../screens/login/view/login_screen.dart';
 import '../screens/register/view/register_screen.dart';
+import '../screens/registration_otp/view/registration_otp_screen.dart';
 import '../screens/create_password/view/create_password_screen.dart';
 import '../screens/forgot_password/view/forgot_password_screen.dart';
 import '../screens/otp_verification/view/otp_verification_screen.dart';
@@ -61,6 +64,13 @@ class Routes {
       transitionDuration: const Duration(milliseconds: 300),
     ),
     GetPage(
+      name: RoutesPath.registrationOtpScreen,
+      page: () => const RegistrationOtpScreen(),
+      binding: CommonBindings(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 300),
+    ),
+    GetPage(
       name: RoutesPath.otpVerificationScreen,
       page: () => const OtpVerificationScreen(),
       transition: Transition.fadeIn,
@@ -76,6 +86,21 @@ class Routes {
     GetPage(
       name: RoutesPath.servicesScreen,
       page: () => const ServicesScreen(),
+      binding: CommonBindings(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 300),
+    ),
+    GetPage(
+      name: RoutesPath.servicesItemScreen,
+      page: () => ServiceItemListScreen(),
+      binding: CommonBindings(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 300),
+    ),
+
+    GetPage(
+      name: RoutesPath.itemDetailsScreen,
+      page: () => ItemDetailsScreen(),
       binding: CommonBindings(),
       transition: Transition.fadeIn,
       transitionDuration: const Duration(milliseconds: 300),
