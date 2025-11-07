@@ -1,6 +1,6 @@
+import 'package:chologhuri/helpers/color_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../helpers/color_helper.dart';
 import 'common_components.dart';
 
 class CustomBottomNavigation extends StatelessWidget {

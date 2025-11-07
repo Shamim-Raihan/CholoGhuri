@@ -97,9 +97,9 @@ class LoginScreen extends StatelessWidget {
       children: [
         // Email/Mobile Field
         CommonComponents().commonTextField(
-          controller: controller.emailController,
-          labelText: 'Email or mobile number',
-          keyboardType: TextInputType.emailAddress,
+          controller: controller.phoneController,
+          labelText: 'Mobile number',
+          keyboardType: TextInputType.number,
         ),
         SpaceHelper.verticalSpace30,
 
@@ -141,18 +141,5 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildForgotPassword(LoginController controller) {
-    return Center(
-      child: GestureDetector(
-        onTap: controller.navigateToForgotPassword,
-        child: CommonComponents().commonText(
-          fontSize: 16,
-          textData: 'Forgot password?',
-          fontWeight: FontWeight.w400,
-          color: ColorHelper.textPrimary,
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
+  // ...forgot password removed
 }
