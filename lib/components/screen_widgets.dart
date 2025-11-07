@@ -1,8 +1,8 @@
+import 'package:chologhuri/helpers/color_helper.dart';
+import 'package:chologhuri/helpers/space_helper.dart';
+import 'package:chologhuri/screens/home/view/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../helpers/color_helper.dart';
-import '../helpers/space_helper.dart';
-import '../screens/home/view/home_screen.dart';
 import 'common_components.dart';
 
 // Home Screen Widget

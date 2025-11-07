@@ -1,7 +1,7 @@
+import 'package:chologhuri/helpers/color_helper.dart';
+import 'package:chologhuri/helpers/space_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../helpers/color_helper.dart';
-import '../helpers/space_helper.dart';
 
 Widget itemCard({required String id, required VoidCallback onTap}) {
   return InkWell(

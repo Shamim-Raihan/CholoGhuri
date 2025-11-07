@@ -1,53 +1,85 @@
-import 'package:chologhuri/screens/login/services/auth_storage_service.dart';
+// auth token resolved within ServiceListService now
+import 'package:chologhuri/screens/services/model/service_item.dart';
+import 'package:chologhuri/screens/services/service_list_service.dart';
+import 'package:chologhuri/core/localization/localization_service.dart';
+import 'package:chologhuri/core/config/api_config.dart';
 import 'package:get/get.dart';
-import 'package:logger/logger.dart';
 
 class HomeController extends GetxController {
-  AuthStorageService authStorage = AuthStorageService();
-
-  // Filter state
   final RxInt selectedFilterIndex = 0.obs;
-  final RxList<String> filterOptions =
-      <String>[
-        'All',
-        'Hotel',
-        'Fuel Pump',
-        'Workshop',
-        'Raker Service',
-        'Hospital',
-        'Ambulance',
-      ].obs;
+  final RxList<ServiceItem> filterOptions = <ServiceItem>[].obs;
 
-  // Location state
+  final LocalizationService localizationService =
+      Get.find<LocalizationService>();
+
   final RxString currentLocation = 'Cox Bazar Highway Road'.obs;
-  final RxString locationTitle = 'Your Location'.obs;
+  final RxString locationTitle = 'location'.tr.obs;
 
-  // Map state
   final RxList<MapMarker> mapMarkers = <MapMarker>[].obs;
   final RxBool isLoadingLocation = false.obs;
+
+  final RxBool isLoadingServices = false.obs;
 
   @override
   void onInit() async {
     super.onInit();
     _initializeMapMarkers();
-    final auth = await authStorage.getAuth();
-    Logger().i('Stored auth: $auth');
+    // auth info no longer required here; service resolves token internally
+
+    await localizationService.init();
+    await _loadServiceList();
   }
 
-  // Filter methods
+  Future<void> _loadServiceList() async {
+    isLoadingServices.value = true;
+    final service = ServiceListService();
+    final slug = ApiConfig.setToken;
+
+    final list = await service.fetchServices(slug);
+    if (list.isNotEmpty) {
+      final allItem = ServiceItem(
+        id: 0,
+        nameBn: 'সব',
+        nameEn: 'All',
+        icon: '',
+        order: '0',
+        status: '1',
+      );
+      filterOptions.assignAll([allItem, ...list]);
+    }
+    isLoadingServices.value = false;
+  }
+
   void selectFilter(int index) {
     selectedFilterIndex.value = index;
     _filterMarkers();
   }
 
-  String get selectedFilter => filterOptions[selectedFilterIndex.value];
+  ServiceItem get selectedFilter =>
+      filterOptions.isNotEmpty
+          ? filterOptions[selectedFilterIndex.value]
+          : ServiceItem(
+            id: 0,
+            nameBn: 'সব',
+            nameEn: 'All',
+            icon: '',
+            order: '0',
+            status: '1',
+          );
+
+  String localizedFilterLabel(ServiceItem item) =>
+      item.localizedName(localizationService.currentLanguage);
 
   void onLocationTap() {
     Get.snackbar(
-      'Location',
-      'Location selection will be implemented here',
+      'location'.tr,
+      'location_selection_will_be_implemented'.tr,
       snackPosition: SnackPosition.BOTTOM,
     );
+  }
+
+  Future<void> changeLanguage(String langCode) async {
+    await localizationService.changeLanguage(langCode);
   }
 
   void onMyLocationTap() {
@@ -55,8 +87,8 @@ class HomeController extends GetxController {
     Future.delayed(const Duration(seconds: 1), () {
       isLoadingLocation.value = false;
       Get.snackbar(
-        'Location',
-        'Current location updated',
+        'location'.tr,
+        'current_location_updated'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     });
@@ -108,8 +140,9 @@ class HomeController extends GetxController {
     } else {}
   }
 
-  String _getFilterType(String filter) {
-    switch (filter.toLowerCase()) {
+  String _getFilterType(ServiceItem item) {
+    final name = item.nameEn.toLowerCase();
+    switch (name) {
       case 'hotel':
         return 'hotel';
       case 'fuel pump':
@@ -122,6 +155,8 @@ class HomeController extends GetxController {
         return 'hospital';
       case 'ambulance':
         return 'ambulance';
+      case 'all':
+        return 'all';
       default:
         return 'all';
     }
@@ -136,7 +171,6 @@ class HomeController extends GetxController {
   }
 }
 
-// Model class for map markers
 class MapMarker {
   final String id;
   final double latitude;

@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import '../screens/registration_otp/controller/registration_otp_controller.dart';
+import '../../screens/registration_otp/controller/registration_otp_controller.dart';
 
 class CommonBindings extends Bindings {
   @override

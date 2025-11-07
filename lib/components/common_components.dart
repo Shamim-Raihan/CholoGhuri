@@ -1,8 +1,8 @@
+import 'package:chologhuri/helpers/color_helper.dart';
 import 'package:chologhuri/helpers/space_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../helpers/color_helper.dart';
 
 class CommonComponents {
   Widget commonButton({

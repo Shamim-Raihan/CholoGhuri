@@ -13,6 +13,10 @@ class RegisterController extends GetxController {
   var lastNameController = TextEditingController();
   var emailController = TextEditingController();
   var phoneController = TextEditingController();
+  var serviceFirstNameController = TextEditingController();
+  var serviceLastNameController = TextEditingController();
+  var serviceEmailController = TextEditingController();
+  var servicePhoneController = TextEditingController();
   var latitudeController = TextEditingController();
   var longitudeController = TextEditingController();
   var macAddressController = TextEditingController();
@@ -22,10 +26,7 @@ class RegisterController extends GetxController {
   var districtController = TextEditingController();
   var thanaUpazilaController = TextEditingController();
   var addressController = TextEditingController();
-  var serviceFirstNameController = TextEditingController();
-  var serviceLastNameController = TextEditingController();
-  var serviceEmailController = TextEditingController();
-  var servicePhoneController = TextEditingController();
+
   var serviceLatitudeController = TextEditingController();
   var serviceLongitudeController = TextEditingController();
   var serviceMacAddressController = TextEditingController();
@@ -36,7 +37,6 @@ class RegisterController extends GetxController {
   var serviceThanaUpazilaController = TextEditingController();
   var serviceAddressController = TextEditingController();
 
-  // Registration service
   final RegistrationService _registrationService = RegistrationService();
 
   final RxBool _isLoading = false.obs;
@@ -45,7 +45,6 @@ class RegisterController extends GetxController {
   final RxInt _selectedTab = 0.obs;
   final RxBool _isFetchingLocation = false.obs;
 
-  // Error tracking for individual fields
   final RxString _firstNameError = ''.obs;
   final RxString _lastNameError = ''.obs;
   final RxString _emailError = ''.obs;
@@ -60,7 +59,6 @@ class RegisterController extends GetxController {
   int get selectedTab => _selectedTab.value;
   bool get isFetchingLocation => _isFetchingLocation.value;
 
-  // Error getters
   String get firstNameError => _firstNameError.value;
   String get lastNameError => _lastNameError.value;
   String get emailError => _emailError.value;
@@ -72,28 +70,19 @@ class RegisterController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
-    // User fields listeners - only for visible/editable fields
     firstNameController.addListener(_validateForm);
     lastNameController.addListener(_validateForm);
     emailController.addListener(_validateForm);
     phoneController.addListener(_validateForm);
-
-    // Service Provider fields listeners - only for visible/editable fields
     serviceFirstNameController.addListener(_validateForm);
     serviceLastNameController.addListener(_validateForm);
     serviceEmailController.addListener(_validateForm);
     servicePhoneController.addListener(_validateForm);
-
-    // Automatically fetch location when user arrives at registration screen
     _autoFetchLocationOnInit();
   }
 
   void _autoFetchLocationOnInit() async {
-    // Add a small delay to let the UI settle
     await Future.delayed(const Duration(milliseconds: 500));
-
-    // Fetch location and device info simultaneously
     await Future.wait([fillCurrentLocation(), _fillDeviceInfo()]);
   }
 
@@ -102,8 +91,6 @@ class RegisterController extends GetxController {
     _validateForm();
   }
 
-  /// Request current device location, fill latitude/longitude and reverse-geocode
-  /// to automatically populate country/division/district/thana/address fields.
   Future<void> fillCurrentLocation() async {
     debugPrint('🌍 Starting location fetch...');
     _isFetchingLocation.value = true;
@@ -217,7 +204,6 @@ class RegisterController extends GetxController {
         debugPrint('=======================');
       }
 
-      // Set the same device ID for both MAC and IP address fields
       if (_selectedTab.value == 0) {
         macAddressController.text = deviceId;
         ipAddressController.text = deviceId;
@@ -229,8 +215,6 @@ class RegisterController extends GetxController {
       debugPrint('✅ Device info fetch completed - ID: $deviceId');
     } catch (e) {
       debugPrint('❌ Device info error: $e');
-
-      // Fallback to a generated ID if device info fails
       final fallbackId = DateTime.now().millisecondsSinceEpoch.toString();
       if (_selectedTab.value == 0) {
         macAddressController.text = fallbackId;
@@ -252,7 +236,6 @@ class RegisterController extends GetxController {
     bool isValid = false;
 
     if (_selectedTab.value == 0) {
-      // User tab validation
       final isFirstNameValid = firstNameController.text.trim().length >= 2;
       final isLastNameValid = lastNameController.text.trim().length >= 2;
       final isEmailValid = _isValidEmail(emailController.text);
@@ -283,7 +266,6 @@ class RegisterController extends GetxController {
           isAddressValid &&
           _isTermsAccepted.value;
     } else {
-      // Service Provider tab validation
       final isFirstNameValid =
           serviceFirstNameController.text.trim().length >= 2;
       final isLastNameValid = serviceLastNameController.text.trim().length >= 2;
@@ -322,7 +304,6 @@ class RegisterController extends GetxController {
   }
 
   void _validateAndShowErrors() {
-    // Clear previous errors
     _firstNameError.value = '';
     _lastNameError.value = '';
     _emailError.value = '';
@@ -332,7 +313,6 @@ class RegisterController extends GetxController {
     _termsError.value = '';
 
     if (_selectedTab.value == 0) {
-      // User tab validation with error messages
       if (firstNameController.text.trim().length < 2) {
         _firstNameError.value = 'First name is required (min 2 characters)';
       }
@@ -352,7 +332,6 @@ class RegisterController extends GetxController {
         _ipAddressError.value = 'IP address is required';
       }
     } else {
-      // Service Provider tab validation with error messages
       if (serviceFirstNameController.text.trim().length < 2) {
         _firstNameError.value = 'First name is required (min 2 characters)';
       }
@@ -573,7 +552,6 @@ class RegisterController extends GetxController {
     lastNameController.dispose();
     emailController.dispose();
     phoneController.dispose();
-
     latitudeController.dispose();
     longitudeController.dispose();
     macAddressController.dispose();
@@ -583,7 +561,6 @@ class RegisterController extends GetxController {
     districtController.dispose();
     thanaUpazilaController.dispose();
     addressController.dispose();
-
     serviceFirstNameController.dispose();
     serviceLastNameController.dispose();
     serviceEmailController.dispose();
