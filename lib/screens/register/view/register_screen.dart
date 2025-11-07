@@ -240,22 +240,16 @@ class RegisterScreen extends StatelessWidget {
           ],
         ),
         SpaceHelper.verticalSpace12,
-        Obx(
-          () => CommonComponents().commonTextField(
-            controller: controller.emailController,
-            labelText: 'Email',
-            keyboardType: TextInputType.emailAddress,
-            errorText: controller.emailError,
-          ),
+        CommonComponents().commonTextField(
+          controller: controller.emailController,
+          labelText: 'Email',
+          keyboardType: TextInputType.emailAddress,
         ),
         SpaceHelper.verticalSpace12,
-        Obx(
-          () => CommonComponents().commonTextField(
-            controller: controller.phoneController,
-            labelText: 'Phone',
-            keyboardType: TextInputType.phone,
-            errorText: controller.phoneError,
-          ),
+        CommonComponents().commonTextField(
+          controller: controller.phoneController,
+          labelText: 'Phone',
+          keyboardType: TextInputType.phone,
         ),
       ],
     );
@@ -264,6 +258,71 @@ class RegisterScreen extends StatelessWidget {
   Widget _buildServiceProviderForm(RegisterController controller) {
     return SingleChildScrollView(
       child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  width: 160.w,
+                  child: CommonComponents().commonTextField(
+                    controller: controller.serviceFirstNameController,
+                    labelText: 'First Name',
+                    keyboardType: TextInputType.name,
+                  ),
+                ),
+              ),
+              SpaceHelper.horizontalSpace8,
+              Expanded(
+                child: SizedBox(
+                  width: 160.w,
+                  child: CommonComponents().commonTextField(
+                    controller: controller.serviceLastNameController,
+                    labelText: 'Last Name',
+                    keyboardType: TextInputType.name,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SpaceHelper.verticalSpace12,
+          CommonComponents().commonTextField(
+            controller: controller.serviceEmailController,
+            labelText: 'Email',
+            keyboardType: TextInputType.emailAddress,
+          ),
+          SpaceHelper.verticalSpace12,
+          CommonComponents().commonTextField(
+            controller: controller.servicePhoneController,
+            labelText: 'Phone',
+            keyboardType: TextInputType.phone,
+          ),
+          SpaceHelper.verticalSpace12,
+          CommonComponents().commonTextField(
+            controller: controller.organizationNameController,
+            labelText: 'Organization Name',
+            keyboardType: TextInputType.text,
+          ),
+          SpaceHelper.verticalSpace12,
+          CommonComponents().commonTextField(
+            controller: controller.organizationEmailController,
+            labelText: 'Organization Email',
+            keyboardType: TextInputType.emailAddress,
+          ),
+          SpaceHelper.verticalSpace12,
+          CommonComponents().commonTextField(
+            controller: controller.organizationPhoneController,
+            labelText: 'Organization Phone',
+            keyboardType: TextInputType.phone,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTermsAndConditions(RegisterController controller) {
+    return Obx(
+      () => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [

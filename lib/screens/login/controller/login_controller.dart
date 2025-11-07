@@ -5,9 +5,8 @@ import '../../../routes/routes_path.dart';
 import '../services/auth_services.dart';
 
 class LoginController extends GetxController {
-  final TextEditingController phoneController = TextEditingController();
-  final AuthService _authService = AuthService();
-  final Logger _logger = Logger();
+  final TextEditingController emailController = TextEditingController();
+  // final TextEditingController passwordController = TextEditingController();
 
   final RxBool _isLoading = false.obs;
   final RxBool _isFormValid = false.obs;
@@ -18,12 +17,18 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    phoneController.addListener(_validateForm);
+    emailController.addListener(_validateForm);
+    // passwordController.addListener(_validateForm);
+  }
+
+  void togglePasswordVisibility() {
+    _isPasswordVisible.value = !_isPasswordVisible.value;
   }
 
   void _validateForm() {
-    final isValid = _isValidPhone(phoneController.text);
-    _isFormValid.value = isValid;
+    final isEmailValid = _isValidEmail(emailController.text);
+    // final isPasswordValid = passwordController.text.length >= 6;
+    _isFormValid.value = isEmailValid;
   }
 
   bool _isValidPhone(String value) {
@@ -50,31 +55,17 @@ class LoginController extends GetxController {
     final phone = phoneController.text.replaceAll(RegExp(r'[^0-9]'), '');
 
     try {
-      final resp = await _authService.sendOtp(phone: phone);
-      _logger.i('OTP send response: ${resp.message}');
+      await Future.delayed(const Duration(seconds: 2));
 
-      if (resp.success) {
-        Get.snackbar(
-          'Success',
-          'Otp sent successfully.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
+      Get.snackbar(
+        'Success',
+        'Login successful!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
 
-        Get.toNamed(
-          RoutesPath.otpVerificationScreen,
-          arguments: {'phone': phone},
-        );
-      } else {
-        Get.snackbar(
-          'Error',
-          resp.message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-      }
+      Get.toNamed(RoutesPath.otpVerificationScreen);
     } catch (e) {
       _logger.e('Failed to send OTP: $e');
       Get.snackbar(
@@ -95,7 +86,8 @@ class LoginController extends GetxController {
 
   @override
   void onClose() {
-    // phoneController.dispose();
+    emailController.dispose();
+    // passwordController.dispose();
     super.onClose();
   }
 }

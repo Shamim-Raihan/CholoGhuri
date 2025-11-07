@@ -9,222 +9,59 @@ import '../models/registration_request_model.dart';
 import '../services/registration_service.dart';
 
 class RegisterController extends GetxController {
-  var firstNameController = TextEditingController();
-  var lastNameController = TextEditingController();
-  var emailController = TextEditingController();
-  var phoneController = TextEditingController();
-  var serviceFirstNameController = TextEditingController();
-  var serviceLastNameController = TextEditingController();
-  var serviceEmailController = TextEditingController();
-  var servicePhoneController = TextEditingController();
-  var latitudeController = TextEditingController();
-  var longitudeController = TextEditingController();
-  var macAddressController = TextEditingController();
-  var ipAddressController = TextEditingController();
-  var countryController = TextEditingController();
-  var divisionController = TextEditingController();
-  var districtController = TextEditingController();
-  var thanaUpazilaController = TextEditingController();
-  var addressController = TextEditingController();
+  // User fields
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
 
-  var serviceLatitudeController = TextEditingController();
-  var serviceLongitudeController = TextEditingController();
-  var serviceMacAddressController = TextEditingController();
-  var serviceIpAddressController = TextEditingController();
-  var serviceCountryController = TextEditingController();
-  var serviceDivisionController = TextEditingController();
-  var serviceDistrictController = TextEditingController();
-  var serviceThanaUpazilaController = TextEditingController();
-  var serviceAddressController = TextEditingController();
-
-  final RegistrationService _registrationService = RegistrationService();
+  // Service Provider fields
+  final TextEditingController serviceFirstNameController =
+      TextEditingController();
+  final TextEditingController serviceLastNameController =
+      TextEditingController();
+  final TextEditingController serviceEmailController = TextEditingController();
+  final TextEditingController servicePhoneController = TextEditingController();
+  final TextEditingController organizationNameController =
+      TextEditingController();
+  final TextEditingController organizationEmailController =
+      TextEditingController();
+  final TextEditingController organizationPhoneController =
+      TextEditingController();
 
   final RxBool _isLoading = false.obs;
   final RxBool _isTermsAccepted = false.obs;
   final RxBool _isFormValid = false.obs;
   final RxInt _selectedTab = 0.obs;
-  final RxBool _isFetchingLocation = false.obs;
-
-  final RxString _firstNameError = ''.obs;
-  final RxString _lastNameError = ''.obs;
-  final RxString _emailError = ''.obs;
-  final RxString _phoneError = ''.obs;
-  final RxString _macAddressError = ''.obs;
-  final RxString _ipAddressError = ''.obs;
-  final RxString _termsError = ''.obs;
 
   bool get isLoading => _isLoading.value;
   bool get isTermsAccepted => _isTermsAccepted.value;
   bool get isFormValid => _isFormValid.value;
   int get selectedTab => _selectedTab.value;
-  bool get isFetchingLocation => _isFetchingLocation.value;
-
-  String get firstNameError => _firstNameError.value;
-  String get lastNameError => _lastNameError.value;
-  String get emailError => _emailError.value;
-  String get phoneError => _phoneError.value;
-  String get macAddressError => _macAddressError.value;
-  String get ipAddressError => _ipAddressError.value;
-  String get termsError => _termsError.value;
 
   @override
   void onInit() {
     super.onInit();
+
+    // User fields listeners
     firstNameController.addListener(_validateForm);
     lastNameController.addListener(_validateForm);
     emailController.addListener(_validateForm);
     phoneController.addListener(_validateForm);
+
+    // Service Provider fields listeners
     serviceFirstNameController.addListener(_validateForm);
     serviceLastNameController.addListener(_validateForm);
     serviceEmailController.addListener(_validateForm);
     servicePhoneController.addListener(_validateForm);
-    _autoFetchLocationOnInit();
-  }
-
-  void _autoFetchLocationOnInit() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    await Future.wait([fillCurrentLocation(), _fillDeviceInfo()]);
+    organizationNameController.addListener(_validateForm);
+    organizationEmailController.addListener(_validateForm);
+    organizationPhoneController.addListener(_validateForm);
   }
 
   void selectTab(int index) {
     _selectedTab.value = index;
     _validateForm();
-  }
-
-  Future<void> fillCurrentLocation() async {
-    debugPrint('🌍 Starting location fetch...');
-    _isFetchingLocation.value = true;
-    try {
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.deniedForever ||
-          permission == LocationPermission.denied) {
-        Get.snackbar(
-          'Permission denied',
-          'Location permission is required to auto-fill address',
-        );
-        return;
-      }
-
-      final pos = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-
-      debugPrint('=== LOCATION DATA ===');
-      debugPrint('Latitude: ${pos.latitude}');
-      debugPrint('Longitude: ${pos.longitude}');
-      debugPrint('Accuracy: ${pos.accuracy}m');
-      debugPrint('Altitude: ${pos.altitude}m');
-
-      if (_selectedTab.value == 0) {
-        latitudeController.text = pos.latitude.toString();
-        longitudeController.text = pos.longitude.toString();
-      } else {
-        serviceLatitudeController.text = pos.latitude.toString();
-        serviceLongitudeController.text = pos.longitude.toString();
-      }
-
-      // Reverse geocode
-      final placemarks = await placemarkFromCoordinates(
-        pos.latitude,
-        pos.longitude,
-      );
-      if (placemarks.isNotEmpty) {
-        final p = placemarks.first;
-        final composedAddress = [
-          p.street,
-          p.subLocality,
-          p.locality,
-          p.postalCode,
-          p.country,
-        ].where((e) => e != null && e.isNotEmpty).join(', ');
-
-        debugPrint('=== REVERSE GEOCODING DATA ===');
-        debugPrint('Country: ${p.country}');
-        debugPrint('Administrative Area (Division): ${p.administrativeArea}');
-        debugPrint(
-          'Sub Administrative Area (Thana): ${p.subAdministrativeArea}',
-        );
-        debugPrint('Locality (District): ${p.locality}');
-        debugPrint('Sub Locality: ${p.subLocality}');
-        debugPrint('Street: ${p.street}');
-        debugPrint('Postal Code: ${p.postalCode}');
-        debugPrint('Composed Address: $composedAddress');
-        debugPrint('=======================');
-
-        if (_selectedTab.value == 0) {
-          countryController.text = p.country ?? '';
-          divisionController.text = p.administrativeArea ?? '';
-          districtController.text = p.locality ?? '';
-          thanaUpazilaController.text = p.subAdministrativeArea ?? '';
-          addressController.text = composedAddress;
-        } else {
-          serviceCountryController.text = p.country ?? '';
-          serviceDivisionController.text = p.administrativeArea ?? '';
-          serviceDistrictController.text = p.locality ?? '';
-          serviceThanaUpazilaController.text = p.subAdministrativeArea ?? '';
-          serviceAddressController.text = composedAddress;
-        }
-      }
-    } catch (e) {
-      debugPrint('❌ Location error: $e');
-      Get.snackbar('Location error', e.toString());
-    } finally {
-      debugPrint('✅ Location fetch completed');
-      _isFetchingLocation.value = false;
-      _validateForm();
-    }
-  }
-
-  Future<void> _fillDeviceInfo() async {
-    debugPrint('📱 Starting device info fetch...');
-    try {
-      final deviceInfo = DeviceInfoPlugin();
-      String deviceId = '';
-
-      if (Platform.isAndroid) {
-        final androidInfo = await deviceInfo.androidInfo;
-        deviceId = androidInfo.id;
-        debugPrint('=== ANDROID DEVICE INFO ===');
-        debugPrint('Android ID: ${androidInfo.id}');
-        debugPrint('Brand: ${androidInfo.brand}');
-        debugPrint('Model: ${androidInfo.model}');
-        debugPrint('Device: ${androidInfo.device}');
-        debugPrint('==========================');
-      } else if (Platform.isIOS) {
-        final iosInfo = await deviceInfo.iosInfo;
-        deviceId = iosInfo.identifierForVendor ?? 'unknown';
-        debugPrint('=== IOS DEVICE INFO ===');
-        debugPrint('Identifier for Vendor: ${iosInfo.identifierForVendor}');
-        debugPrint('Name: ${iosInfo.name}');
-        debugPrint('Model: ${iosInfo.model}');
-        debugPrint('System Name: ${iosInfo.systemName}');
-        debugPrint('=======================');
-      }
-
-      if (_selectedTab.value == 0) {
-        macAddressController.text = deviceId;
-        ipAddressController.text = deviceId;
-      } else {
-        serviceMacAddressController.text = deviceId;
-        serviceIpAddressController.text = deviceId;
-      }
-
-      debugPrint('✅ Device info fetch completed - ID: $deviceId');
-    } catch (e) {
-      debugPrint('❌ Device info error: $e');
-      final fallbackId = DateTime.now().millisecondsSinceEpoch.toString();
-      if (_selectedTab.value == 0) {
-        macAddressController.text = fallbackId;
-        ipAddressController.text = fallbackId;
-      } else {
-        serviceMacAddressController.text = fallbackId;
-        serviceIpAddressController.text = fallbackId;
-      }
-      debugPrint('🔄 Using fallback ID: $fallbackId');
-    }
   }
 
   void toggleTermsAcceptance() {
@@ -236,127 +73,41 @@ class RegisterController extends GetxController {
     bool isValid = false;
 
     if (_selectedTab.value == 0) {
+      // User tab validation
       final isFirstNameValid = firstNameController.text.trim().length >= 2;
       final isLastNameValid = lastNameController.text.trim().length >= 2;
       final isEmailValid = _isValidEmail(emailController.text);
       final isPhoneValid = _isValidPhone(phoneController.text);
-      final isLatitudeValid = latitudeController.text.trim().isNotEmpty;
-      final isLongitudeValid = longitudeController.text.trim().isNotEmpty;
-      final isMacValid = macAddressController.text.trim().isNotEmpty;
-      final isIpValid = ipAddressController.text.trim().isNotEmpty;
-      final isCountryValid = countryController.text.trim().isNotEmpty;
-      final isDivisionValid = divisionController.text.trim().isNotEmpty;
-      final isDistrictValid = districtController.text.trim().isNotEmpty;
-      final isThanaValid = thanaUpazilaController.text.trim().isNotEmpty;
-      final isAddressValid = addressController.text.trim().isNotEmpty;
 
       isValid =
           isFirstNameValid &&
           isLastNameValid &&
           isEmailValid &&
           isPhoneValid &&
-          isLatitudeValid &&
-          isLongitudeValid &&
-          isMacValid &&
-          isIpValid &&
-          isCountryValid &&
-          isDivisionValid &&
-          isDistrictValid &&
-          isThanaValid &&
-          isAddressValid &&
           _isTermsAccepted.value;
     } else {
+      // Service Provider tab validation
       final isFirstNameValid =
           serviceFirstNameController.text.trim().length >= 2;
       final isLastNameValid = serviceLastNameController.text.trim().length >= 2;
       final isEmailValid = _isValidEmail(serviceEmailController.text);
       final isPhoneValid = _isValidPhone(servicePhoneController.text);
-
-      final isLatitudeValid = serviceLatitudeController.text.trim().isNotEmpty;
-      final isLongitudeValid =
-          serviceLongitudeController.text.trim().isNotEmpty;
-      final isMacValid = serviceMacAddressController.text.trim().isNotEmpty;
-      final isIpValid = serviceIpAddressController.text.trim().isNotEmpty;
-      final isCountryValid = serviceCountryController.text.trim().isNotEmpty;
-      final isDivisionValid = serviceDivisionController.text.trim().isNotEmpty;
-      final isDistrictValid = serviceDistrictController.text.trim().isNotEmpty;
-      final isThanaValid = serviceThanaUpazilaController.text.trim().isNotEmpty;
-      final isAddressValid = serviceAddressController.text.trim().isNotEmpty;
+      final isOrgNameValid = organizationNameController.text.trim().length >= 2;
+      final isOrgEmailValid = _isValidEmail(organizationEmailController.text);
+      final isOrgPhoneValid = _isValidPhone(organizationPhoneController.text);
 
       isValid =
           isFirstNameValid &&
           isLastNameValid &&
           isEmailValid &&
           isPhoneValid &&
-          isLatitudeValid &&
-          isLongitudeValid &&
-          isMacValid &&
-          isIpValid &&
-          isCountryValid &&
-          isDivisionValid &&
-          isDistrictValid &&
-          isThanaValid &&
-          isAddressValid &&
+          isOrgNameValid &&
+          isOrgEmailValid &&
+          isOrgPhoneValid &&
           _isTermsAccepted.value;
     }
 
     _isFormValid.value = isValid;
-  }
-
-  void _validateAndShowErrors() {
-    _firstNameError.value = '';
-    _lastNameError.value = '';
-    _emailError.value = '';
-    _phoneError.value = '';
-    _macAddressError.value = '';
-    _ipAddressError.value = '';
-    _termsError.value = '';
-
-    if (_selectedTab.value == 0) {
-      if (firstNameController.text.trim().length < 2) {
-        _firstNameError.value = 'First name is required (min 2 characters)';
-      }
-      if (lastNameController.text.trim().length < 2) {
-        _lastNameError.value = 'Last name is required (min 2 characters)';
-      }
-      if (!_isValidEmail(emailController.text)) {
-        _emailError.value = 'Valid email is required';
-      }
-      if (!_isValidPhone(phoneController.text)) {
-        _phoneError.value = 'Valid phone number is required';
-      }
-      if (macAddressController.text.trim().isEmpty) {
-        _macAddressError.value = 'MAC address is required';
-      }
-      if (ipAddressController.text.trim().isEmpty) {
-        _ipAddressError.value = 'IP address is required';
-      }
-    } else {
-      if (serviceFirstNameController.text.trim().length < 2) {
-        _firstNameError.value = 'First name is required (min 2 characters)';
-      }
-      if (serviceLastNameController.text.trim().length < 2) {
-        _lastNameError.value = 'Last name is required (min 2 characters)';
-      }
-      if (!_isValidEmail(serviceEmailController.text)) {
-        _emailError.value = 'Valid email is required';
-      }
-      if (!_isValidPhone(servicePhoneController.text)) {
-        _phoneError.value = 'Valid phone number is required';
-      }
-      if (serviceMacAddressController.text.trim().isEmpty) {
-        _macAddressError.value = 'MAC address is required';
-      }
-      if (serviceIpAddressController.text.trim().isEmpty) {
-        _ipAddressError.value = 'IP address is required';
-      }
-    }
-
-    if (!_isTermsAccepted.value) {
-      _termsError.value = 'Please accept terms and conditions';
-    }
-
-    _validateForm();
   }
 
   bool _isValidEmail(String email) {
@@ -548,32 +299,20 @@ class RegisterController extends GetxController {
 
   @override
   void onClose() {
+    // User controllers
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
     phoneController.dispose();
-    latitudeController.dispose();
-    longitudeController.dispose();
-    macAddressController.dispose();
-    ipAddressController.dispose();
-    countryController.dispose();
-    divisionController.dispose();
-    districtController.dispose();
-    thanaUpazilaController.dispose();
-    addressController.dispose();
+
+    // Service Provider controllers
     serviceFirstNameController.dispose();
     serviceLastNameController.dispose();
     serviceEmailController.dispose();
     servicePhoneController.dispose();
-    serviceLatitudeController.dispose();
-    serviceLongitudeController.dispose();
-    serviceMacAddressController.dispose();
-    serviceIpAddressController.dispose();
-    serviceCountryController.dispose();
-    serviceDivisionController.dispose();
-    serviceDistrictController.dispose();
-    serviceThanaUpazilaController.dispose();
-    serviceAddressController.dispose();
+    organizationNameController.dispose();
+    organizationEmailController.dispose();
+    organizationPhoneController.dispose();
 
     super.onClose();
   }
